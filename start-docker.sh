@@ -1,3 +1,5 @@
+docker build . -t pubsub-provider
+
 docker run \
   --detach \
   --name pubsub-provider \
