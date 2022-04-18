@@ -1,3 +1,5 @@
+docker rm -f pubsub-provider
+
 docker build . -t pubsub-provider
 
 # listen on 8080 and 8443 ports to be compatible with http and https on cloudflare
