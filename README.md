@@ -1,4 +1,4 @@
-### Install and start
+#### Install and start
 
 ```sh
 npm install
