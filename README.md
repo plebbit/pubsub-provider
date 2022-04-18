@@ -15,7 +15,7 @@ node start
 
 ```sh
 node start
-// in another terminal
+# in another terminal
 node test-local
 ```
 
@@ -24,8 +24,8 @@ node test-local
 - Edit URL in test-remote.js
 
 ```sh
-// on server
+# on server
 node start
-// locally
+# locally
 node test-remote
 ```
