@@ -56,9 +56,10 @@ const startServer = (port) => {
     }
     proxy.web(req, res, {target: 'http://localhost:5001'})
   })
+  server.on('error', console.error)
   server.listen(port)
   console.log(`proxy listening on port ${port}`)
 }
-// listen on 2 ports to be compatible with http and https on cloudflare
+// listen on port 8080 because sometimes port 80 doesn't work
 startServer(8080)
-startServer(8443)
+startServer(80)
