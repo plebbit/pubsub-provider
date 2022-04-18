@@ -11,6 +11,8 @@
   "dependencies": {
     "debug": "4.3.4",
     "http-proxy": "1.18.1",
+    "http-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^5.0.1",
     "ipfs-http-client": "56.0.2"
   }
 }
