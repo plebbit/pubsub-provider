@@ -2,11 +2,8 @@ FROM node:16
 
 # install
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY . .
 RUN npm ci
-
-# copy files
-COPY .. .
 
 # proxy port
 EXPOSE 8080
