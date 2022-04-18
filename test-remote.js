@@ -2,7 +2,7 @@ const IpfsHttpClient = require('ipfs-http-client')
 const https = require('https')
 
 const agent = new https.Agent({keepAlive: true, maxSockets: 99999})
-const url = 'https://pubsubprovider.xyz:8080/api/v0'
+const url = 'https://pubsubprovider.xyz:8443/api/v0'
 const client = IpfsHttpClient.create({agent, url})
 
 ;(async () => {
