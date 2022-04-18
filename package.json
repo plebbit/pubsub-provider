@@ -1,0 +1,16 @@
+{
+  "name": "pubsub-provider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "4.3.4",
+    "http-proxy": "1.18.1",
+    "ipfs-http-client": "56.0.2"
+  }
+}
