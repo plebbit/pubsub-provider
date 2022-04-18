@@ -4,8 +4,8 @@ docker run \
   --restart always \
   --log-opt max-size=10m \
   --log-opt max-file=5 \
-  --port 8080:8080 \
-  --port 4001:4001 \
+  --publish 8080:8080 \
+  --publish 4001:4001 \
   pubsub-provider
 
 docker logs --follow pubsub-provider
