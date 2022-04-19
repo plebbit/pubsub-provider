@@ -24,7 +24,7 @@ fs.rmSync(ipfsConfigPath)
 
 // start ipfs daemon
 const ipfsProcess = exec(`${ipfsBinaryPath} daemon --enable-pubsub-experiment`)
-console.log(`ipfs process launched with pid ${ipfsProcess.pid}`)
+console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
 ipfsProcess.stderr.on('data', console.error)
 ipfsProcess.stdin.on('data', debugIpfs)
 ipfsProcess.stdout.on('data', debugIpfs)
@@ -58,7 +58,7 @@ const startServer = (port) => {
   })
   server.on('error', console.error)
   server.listen(port)
-  console.log(`proxy listening on port ${port}`)
+  console.log(`proxy server listening on port ${port}`)
 }
 // listen on port 8080 because sometimes port 80 doesn't work
 startServer(8080)
