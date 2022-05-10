@@ -6,7 +6,6 @@ const debugIpfs = require('debug')('pubsub-provider:ipfs')
 Debug.enable('pubsub-provider:*')
 const {execSync, exec} = require('child_process')
 const ipfsBinaryPath = require('path').join(__dirname, 'ipfs')
-const ipfsConfigPath = require('path').join(__dirname, 'ipfs-config.json')
 const fs = require('fs')
 
 // init ipfs binary
@@ -16,11 +15,7 @@ try {
 catch (e) {}
 
 // edit ipfs config to remove gateway on port 8080 because it conflicts with proxy
-const config = JSON.parse(execSync(`${ipfsBinaryPath} config show`).toString())
-config.Addresses.Gateway = undefined
-fs.writeFileSync(ipfsConfigPath, JSON.stringify(config))
-execSync(`${ipfsBinaryPath} config replace ${ipfsConfigPath}`)
-fs.rmSync(ipfsConfigPath)
+execSync(`${ipfsBinaryPath} config --json Addresses.Gateway null`, {stdio: 'inherit'})
 
 // start ipfs daemon
 const ipfsProcess = exec(`${ipfsBinaryPath} daemon --enable-pubsub-experiment`)
