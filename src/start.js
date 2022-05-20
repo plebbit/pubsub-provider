@@ -5,8 +5,9 @@ const debugProxy = require('debug')('pubsub-provider:proxy')
 const debugIpfs = require('debug')('pubsub-provider:ipfs')
 Debug.enable('pubsub-provider:*')
 const {execSync, exec} = require('child_process')
-const ipfsBinaryPath = require('path').join(__dirname, 'ipfs')
+const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
+const {URL} = require('url')
 
 // init ipfs binary
 try {
@@ -28,6 +29,9 @@ ipfsProcess.on('exit', () => {
   console.error(`ipfs process with pid ${ipfsProcess.pid} exited`)
   process.exit(1)
 })
+process.on("exit", () => {
+  exec(`kill ${ipfsProcess.pid + 1}`)
+})
 
 // start proxy
 const proxy = httpProxy.createProxyServer({})
@@ -37,6 +41,13 @@ const proxy = httpProxy.createProxyServer({})
 proxy.on('error', (e) => {
   console.error(e)
 })
+
+const getPubsubTopic = (req) => {
+  try {
+    return new URL('http://localhost' + req.url).searchParams.get('arg')
+  }
+  catch (e) {}
+}
 
 // start server
 const startServer = (port) => {
@@ -49,6 +60,7 @@ const startServer = (port) => {
       res.end()
       return
     }
+    // const pubsubTopic = getPubsubTopic(req)
     proxy.web(req, res, {target: 'http://localhost:5001'})
   })
   server.on('error', console.error)
