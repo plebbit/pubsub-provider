@@ -7,12 +7,10 @@ const ipfsClientUrl = 'http://localhost:8080/api/v0'
 const pubsubTopic = 'plebbit test'
 
 describe('pubsub-provider', () => {
-  let ipfsClient, ipfsClient2, ipfsClient3
+  let ipfsClient
 
   before(() => {
     ipfsClient = IpfsHttpClient.create({url: ipfsClientUrl})
-    ipfsClient2 = IpfsHttpClient.create({url: ipfsClientUrl})
-    ipfsClient3 = IpfsHttpClient.create({url: ipfsClientUrl})
   })
 
   it('subscribe and publish 1 client 1 topic 1 message', async () => {
@@ -38,7 +36,7 @@ describe('pubsub-provider', () => {
     // await new Promise(r => null)
   })
 
-  it('subscribe and publish 1 client 50 topics 50 messages unsub after each', async () => {
+  it('subscribe and publish 1 client multiple topics 1 message and unsub after each', async () => {
     const topics = 10
     let i =  0
     while (i++ < topics) {
