@@ -1,9 +1,9 @@
+root_path=$(cd `dirname $0` && cd .. && pwd)
+cd "$root_path"
+
 docker rm -f pubsub-provider 2>/dev/null
 
-dockerfile_path=$(cd `dirname $0` && cd ../config && pwd)
-cd "$dockerfile_path"
-docker build . -t pubsub-provider 2>/dev/null
-cd ..
+docker docker build -f config/Dockerfile -t pubsub-provider .  2>/dev/null
 
 # listen on 8080 and 80 ports because sometimes 80 doesn't work
 # 4001 is the ipfs p2p port
