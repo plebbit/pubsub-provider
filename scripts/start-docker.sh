@@ -3,7 +3,11 @@ cd "$root_path"
 
 docker rm -f pubsub-provider 2>/dev/null
 
-docker docker build -f config/Dockerfile -t pubsub-provider --no-cache .  2>/dev/null
+docker docker build \
+  --file config/Dockerfile \
+  --no-cache \
+  --tag pubsub-provider \
+  .  2>/dev/null
 
 # listen on 8080 and 80 ports because sometimes 80 doesn't work
 # 4001 is the ipfs p2p port

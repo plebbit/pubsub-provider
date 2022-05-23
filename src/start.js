@@ -35,34 +35,44 @@ process.on("exit", () => {
 
 // start proxy
 const proxy = httpProxy.createProxyServer({})
+
+// rewrite the request
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
-  // remove 'X-Forwarded-For' added by cloudflare because it gives 403 error on ipfs node
+  // remove headers that could potentially cause an ipfs 403 error
+  proxyReq.removeHeader('CF-IPCountry')
   proxyReq.removeHeader('X-Forwarded-For')
+  proxyReq.removeHeader('CF-RAY')
+  proxyReq.removeHeader('X-Forwarded-Proto')
+  proxyReq.removeHeader('CF-Visitor')
+  proxyReq.removeHeader('sec-ch-ua')
+  proxyReq.removeHeader('sec-ch-ua-mobile')
+  proxyReq.removeHeader('user-agent')
+  proxyReq.removeHeader('referer')
+  proxyReq.removeHeader('CF-Connecting-IP')
+  proxyReq.removeHeader('CDN-Loop')
+  proxyReq.removeHeader('sec-fetch-site')
+  proxyReq.removeHeader('sec-fetch-mode')
+  proxyReq.removeHeader('sec-fetch-dest')
 })
 proxy.on('error', (e) => {
   console.error(e)
 })
 
-const getPubsubTopic = (req) => {
-  try {
-    return new URL('http://localhost' + req.url).searchParams.get('arg')
-  }
-  catch (e) {}
-}
-
 // start server
 const startServer = (port) => {
   const server = http.createServer()
+
+  // never timeout the keep alive connection
   server.keepAliveTimeout = 0
+
   server.on('request', async (req, res) => {
-    debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders, req.body)
+    debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
     if (!req.url.startsWith('/api/v0/pubsub/pub') && !req.url.startsWith('/api/v0/pubsub/sub')) {
       debugProxy(`bad url '${req.url}' 403`)
       res.statusCode = 403
       res.end()
       return
     }
-    // const pubsubTopic = getPubsubTopic(req)
     proxy.web(req, res, {target: 'http://localhost:5001'})
   })
   server.on('error', console.error)
