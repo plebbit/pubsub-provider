@@ -6,7 +6,7 @@ const {expect} = require('chai')
 const ipfsClientUrl = 'http://localhost:8080/api/v0'
 const pubsubTopic = 'plebbit test'
 
-describe('pubsub-provider', () => {
+describe('pubsub-provider (local)', () => {
   let ipfsClient
 
   before(() => {

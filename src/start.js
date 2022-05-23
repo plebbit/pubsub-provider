@@ -35,9 +35,10 @@ process.on("exit", () => {
 
 // start proxy
 const proxy = httpProxy.createProxyServer({})
-// proxy.on('proxyReq', (proxyReq, req, res, options) => {
-  // console.log('proxy request', proxyReq)
-// })
+proxy.on('proxyReq', function(proxyReq, req, res, options) {
+  // remove 'X-Forwarded-For' added by cloudflare because it gives 403 error on ipfs node
+  proxyReq.removeHeader('X-Forwarded-For')
+})
 proxy.on('error', (e) => {
   console.error(e)
 })

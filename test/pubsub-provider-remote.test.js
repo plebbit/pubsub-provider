@@ -6,7 +6,7 @@ const {expect} = require('chai')
 const ipfsClientUrl = 'https://pubsubprovider.xyz/api/v0'
 const pubsubTopic = 'plebbit test'
 
-describe.only('pubsub-provider', () => {
+describe.only('pubsub-provider (remote)', () => {
   let ipfsClient
 
   before(() => {
