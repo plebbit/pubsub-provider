@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/start",
     "test": "mocha test/**/*.test.js",
-    "test:browser": "karma start config/karma.conf.js"
+    "test:browser": "karma start config/karma.conf.js",
+    "remote-listen-subplebbits": "while true; do node test/test-remote-listen-subplebbits; sleep 1; done"
   },
   "author": "",
   "license": "ISC",

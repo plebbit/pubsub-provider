@@ -54,8 +54,9 @@ const startServer = (port) => {
   const server = http.createServer()
   server.keepAliveTimeout = 0
   server.on('request', async (req, res) => {
-    debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
+    debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders, req.body)
     if (!req.url.startsWith('/api/v0/pubsub/pub') && !req.url.startsWith('/api/v0/pubsub/sub')) {
+      debugProxy(`bad url '${req.url}' 403`)
       res.statusCode = 403
       res.end()
       return
