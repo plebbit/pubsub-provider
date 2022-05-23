@@ -3,7 +3,7 @@ cd "$root_path"
 
 docker rm -f pubsub-provider 2>/dev/null
 
-docker docker build \
+docker build \
   --file config/Dockerfile \
   --no-cache \
   --tag pubsub-provider \
