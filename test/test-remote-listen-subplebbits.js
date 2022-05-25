@@ -12,7 +12,7 @@ catch (e) {}
 const url = 'https://pubsubprovider.xyz/api/v0'
 const ipfsClient = IpfsHttpClient.create({agent, url})
 
-const pubsubTopics = ['QmbdJpNU6cAgSXHjUNnSBrUZGBtStKPkdwKyiffqRy1x6c']
+const pubsubTopics = ['QmZVYzLChjKrYDVty6e5JokKffGDZivmEJz9318EYfp2ui']
 
 ;(async () => {
   for (const currentPubsubTopic of pubsubTopics) {

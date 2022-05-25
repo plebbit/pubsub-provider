@@ -73,6 +73,10 @@ const startServer = (port) => {
       res.end()
       return
     }
+
+    // fix error 'has been blocked by CORS policy'
+    res.setHeader('Access-Control-Allow-Origin', '*')
+
     proxy.web(req, res, {target: 'http://localhost:5001'})
   })
   server.on('error', console.error)
