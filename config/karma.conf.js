@@ -10,13 +10,13 @@ const mochaConfig = {
 // possible to add flags when launching the browser
 const CustomChrome = {
   base: 'ChromeHeadless',
-  flags: ['--disable-web-security'],
+  flags: [],
   debug: true,
 }
 
 const DebugChrome = {
   base: 'Chrome',
-  flags: ['--disable-web-security', '--auto-open-devtools-for-tabs'],
+  flags: ['--auto-open-devtools-for-tabs'],
   debug: true,
 }
 
