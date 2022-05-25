@@ -47,7 +47,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('sec-ch-ua')
   proxyReq.removeHeader('sec-ch-ua-mobile')
   proxyReq.removeHeader('user-agent')
-  // proxyReq.removeHeader('origin')
+  proxyReq.removeHeader('origin')
   proxyReq.removeHeader('sec-fetch-site')
   proxyReq.removeHeader('sec-fetch-mode')
   proxyReq.removeHeader('sec-fetch-dest')
