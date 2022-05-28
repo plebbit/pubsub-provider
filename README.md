@@ -1,3 +1,5 @@
+> Note: Cannot use the pubsub provider with Cloudflare to run a subplebbit because Cloudflare timesout the keepalive connection after 2 minutes, and the IPFS HTTP client doesn't automatically reconnect.
+
 #### Install and start
 
 ```sh
