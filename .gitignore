@@ -1,5 +1,6 @@
 test-remote-proxy.js
 proxy-url.js
+telegram-bot.js
 
 # Logs
 logs

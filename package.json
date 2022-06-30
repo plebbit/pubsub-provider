@@ -16,7 +16,8 @@
     "http-proxy": "1.18.1",
     "http-proxy-agent": "5.0.0",
     "https-proxy-agent": "5.0.1",
-    "ipfs-http-client": "56.0.2"
+    "ipfs-http-client": "56.0.2",
+    "telegraf": "4.8.5"
   },
   "devDependencies": {
     "buffer": "6.0.3",
