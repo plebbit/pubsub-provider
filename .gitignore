@@ -1,6 +1,8 @@
 test-remote-proxy.js
 proxy-url.js
 telegram-bot.js
+server-info.js
+chrome-profile
 
 # Logs
 logs
