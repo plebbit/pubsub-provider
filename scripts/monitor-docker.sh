@@ -16,7 +16,9 @@ docker run \
   --log-opt max-size=10m \
   --log-opt max-file=5 \
   --volume=$(pwd)/telegram-bot.js:/usr/src/pubsub-provider/telegram-bot.js \
+  --volume=$(pwd)/server-info.js:/usr/src/pubsub-provider/server-info.js \
   --volume=$(pwd)/scripts:/usr/src/pubsub-provider/scripts \
+  --volume=$(pwd)/chrome-profile:/usr/src/pubsub-provider/chrome-profile \
   pubsub-provider \
   npm run monitor
 
