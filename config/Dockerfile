@@ -1,4 +1,4 @@
-FROM node:16
+FROM buildkite/puppeteer:10.0.0
 
 # install
 WORKDIR /usr/src/pubsub-provider
