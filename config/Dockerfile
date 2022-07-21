@@ -1,5 +1,8 @@
 FROM buildkite/puppeteer:10.0.0
 
+# upgrade node
+RUN npm install -g n && n 16
+
 # install
 WORKDIR /usr/src/pubsub-provider
 COPY ./package.json /usr/src/pubsub-provider/package.json
