@@ -74,12 +74,19 @@ const rebootServer = async () => {
 
   try {
     await browserRebootServer()
+    await browser.close()
+
+    console.log('waiting 5 minutes for server to start...')
+    await sleep(1000 * 60 * 5)
   }
   catch (e) {
     throw e
   }
   finally {
-    await browser.close()
+    try {
+      await browser.close()
+    }
+    catch (e) {}
   }
 }
 
