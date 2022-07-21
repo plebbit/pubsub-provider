@@ -10,7 +10,10 @@ assert(rebootUrl && typeof rebootUrl === 'string', `server info rebootUrl '${reb
 
 const puppeteerOptions = {
   // headless: false,
-  args:[`--user-data-dir=${path.resolve(__dirname, '..', 'chrome-profile')}`]
+  args:[
+    `--user-data-dir=${path.resolve(__dirname, '..', 'chrome-profile')}`,
+    '--no-sandbox'
+  ]
 }
 const timeout = 120000
 const rebootTimeout = 600000
