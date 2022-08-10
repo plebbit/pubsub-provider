@@ -13,6 +13,7 @@ docker build \
 # 4001 is the ipfs p2p port
 docker run \
   --detach \
+  --volume=$(pwd)/basic-auth.js:/usr/src/pubsub-provider/basic-auth.js \
   --name pubsub-provider \
   --restart always \
   --log-opt max-size=10m \
