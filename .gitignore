@@ -3,6 +3,7 @@ proxy-url.js
 telegram-bot.js
 server-info.js
 chrome-profile
+basic-auth.js
 
 # Logs
 logs

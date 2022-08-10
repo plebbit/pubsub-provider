@@ -9,6 +9,14 @@ const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
 const {URL} = require('url')
 
+// use basic auth to have access to any ipfs api, not just pubsub
+let basicAuth
+try {
+  basicAuth = require('../basic-auth')
+  console.log('using basic auth', basicAuth.user)
+}
+catch (e) {}
+
 // init ipfs binary
 try {
   execSync(`${ipfsBinaryPath} init`, {stdio: 'inherit'})
@@ -68,7 +76,17 @@ const startServer = (port) => {
 
   server.on('request', async (req, res) => {
     debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
-    if (!req.url.startsWith('/api/v0/pubsub/pub') && !req.url.startsWith('/api/v0/pubsub/sub')) {
+
+    // basic auth allows any api
+    let reqHasBasicAuth = false
+    const reqBasicAuthHeader = (req.headers.authorization || '').split(' ')[1] || ''
+    const [reqBasicAuthUser, reqBasicAuthPassword] = Buffer.from(reqBasicAuthHeader, 'base64').toString().split(':')
+    if (basicAuth?.user && basicAuth?.password && basicAuth?.user === reqBasicAuthUser && basicAuth?.password === reqBasicAuthPassword) {
+      reqHasBasicAuth = true
+    }
+
+    // no basic auth allows only pubsub api
+    if (!reqHasBasicAuth && !req.url.startsWith('/api/v0/pubsub/pub') && !req.url.startsWith('/api/v0/pubsub/sub')) {
       debugProxy(`bad url '${req.url}' 403`)
       res.statusCode = 403
       res.end()
