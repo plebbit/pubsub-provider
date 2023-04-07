@@ -3,11 +3,12 @@ const httpProxy = require('http-proxy')
 const Debug = require('debug')
 const debugProxy = require('debug')('pubsub-provider:proxy')
 const debugIpfs = require('debug')('pubsub-provider:ipfs')
-// Debug.enable('pubsub-provider:*')
+Debug.enable('pubsub-provider:*')
 const {execSync, exec} = require('child_process')
 const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
 const {URL} = require('url')
+const {proxyLogs} = require('./start-logs')
 
 // use basic auth to have access to any ipfs api, not just pubsub
 let basicAuth
@@ -75,6 +76,14 @@ const startServer = (port) => {
   server.keepAliveTimeout = 0
 
   server.on('request', async (req, res) => {
+    if (req.url === '/service-worker.js' || req.url === '/manifest.json' || req.url === '/favicon.ico') {
+      return
+    }
+
+    if (req.url.startsWith('/logs')) {
+      return proxyLogs(proxy, req, res)
+    }
+
     debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
 
     // basic auth allows any api
