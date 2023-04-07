@@ -76,14 +76,17 @@ const startServer = (port) => {
   server.keepAliveTimeout = 0
 
   server.on('request', async (req, res) => {
+    // unrelated endpoints
     if (req.url === '/service-worker.js' || req.url === '/manifest.json' || req.url === '/favicon.ico') {
       return
     }
 
+    // logs endpoints
     if (req.url.startsWith('/logs')) {
       return proxyLogs(proxy, req, res)
     }
 
+    // start of pubsub related endpoints
     debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
 
     // basic auth allows any api
