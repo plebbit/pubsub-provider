@@ -15,8 +15,13 @@ const onFail = async () => {
     console.log(e)
   }
 
-  await rebootServer()
-  await telegram.sendMessage(telegramBot.chatId, rebootedMessage())
+  try {
+    await rebootServer()
+    await telegram.sendMessage(telegramBot.chatId, rebootedMessage())
+  }
+  catch (e) {
+    await telegram.sendMessage(telegramBot.chatId, `failed rebooting server: ${e.message.slice(0, 400)}`)
+  }
 }
 
 module.exports = onFail
