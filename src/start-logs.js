@@ -51,8 +51,17 @@ const writeLog = async (subplebbitAddress, log) => {
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
-  // remove encrypted fields because they are huge and can't be read anyway
-  log = log.replaceAll(/"encrypted[^}]+},/g, '')
+  // try to parse message and delete useless fields
+  try {
+    const message = JSON.parse(log)
+    delete message.encryptedPublication
+    delete message.encryptedChallenges
+    delete message.encryptedChallengeAnswers
+    delete message.acceptedChallengeTypes
+    delete message.protocolVersion
+    log = JSON.stringify(message)
+  }
+  catch (e) {}
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
