@@ -20,6 +20,7 @@ const onFail = async () => {
     await telegram.sendMessage(telegramBot.chatId, rebootedMessage())
   }
   catch (e) {
+    console.log('failed rebooting server', e)
     await telegram.sendMessage(telegramBot.chatId, `failed rebooting server: ${e.message.slice(0, 400)}`)
   }
 }
