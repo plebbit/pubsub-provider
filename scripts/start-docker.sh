@@ -14,6 +14,7 @@ docker build \
 docker run \
   --detach \
   --volume=$(pwd)/basic-auth.js:/usr/src/pubsub-provider/basic-auth.js \
+  --volume=$(pwd)/logs:/usr/src/pubsub-provider/logs \
   --name pubsub-provider \
   --restart always \
   --log-opt max-size=10m \
