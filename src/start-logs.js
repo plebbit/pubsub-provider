@@ -59,6 +59,7 @@ const writeLog = async (subplebbitAddress, log) => {
     delete message.encryptedChallengeAnswers
     delete message.acceptedChallengeTypes
     delete message.protocolVersion
+    delete message.signature
     log = JSON.stringify(message)
   }
   catch (e) {}
