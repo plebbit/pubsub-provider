@@ -6,7 +6,6 @@ const logFolderPath = path.resolve(__dirname, '..', 'logs')
 const assert = require('assert')
 const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
-const sortJson = require('sort-json');
 
 const subplebbits = [
   {
