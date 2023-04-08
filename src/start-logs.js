@@ -53,7 +53,7 @@ const writeLog = async (subplebbitAddress, log) => {
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
   // remove encrypted fields because they are huge and can't be read anyway
   log = log.replaceAll(/"encrypted[^}]+},/g, '')
-  await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n`)
+  await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
 const pubsubLog = (subplebbit) => {
