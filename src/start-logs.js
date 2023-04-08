@@ -6,6 +6,7 @@ const logFolderPath = path.resolve(__dirname, '..', 'logs')
 const assert = require('assert')
 const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
+const sortJson = require('sort-json');
 
 const subplebbits = [
   {
@@ -60,7 +61,11 @@ const writeLog = async (subplebbitAddress, log) => {
     delete message.acceptedChallengeTypes
     delete message.protocolVersion
     delete message.signature
-    log = JSON.stringify(message)
+    // sort the json props so they are easier to read in the logs
+    const sorted = {}
+    sorted.type = message.type
+    sorted.challengeRequestId = message.challengeRequestId
+    log = JSON.stringify({...sorted, ...message})
   }
   catch (e) {}
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
