@@ -1,15 +1,15 @@
 const puppeteer = require('puppeteer')
 const path = require('path')
 const assert = require('assert')
-const {username, password, loginUrl, rebootUrl} = require('../server-info')
+const {username, password, loginUrl, serverUrl} = require('../server-info')
 
 assert(username && typeof username === 'string', `server info username '${username}' invalid`)
 assert(password && typeof password === 'string', `server info password '${password}' invalid`)
 assert(loginUrl && typeof loginUrl === 'string', `server info loginUrl '${loginUrl}' invalid`)
-assert(rebootUrl && typeof rebootUrl === 'string', `server info rebootUrl '${rebootUrl}' invalid`)
+assert(serverUrl && typeof serverUrl === 'string', `server info serverUrl '${serverUrl}' invalid`)
 
 const puppeteerOptions = {
-  // headless: false,
+  headless: false,
   args:[
     `--user-data-dir=${path.resolve(__dirname, '..', 'chrome-profile')}`,
     '--no-sandbox'
@@ -53,6 +53,31 @@ const browserRebootServer = async () => {
   }
   console.log('logged in')
 
+  // go to server url
+  console.log('going to server url')
+  try {
+    await page.goto(serverUrl, {waitFor: 'networkidle2', timeout: rebootTimeout})
+  }
+  catch (e) {
+    console.log(e.message)
+  }
+  await page.waitForFunction(() => {
+    let url
+    document.querySelectorAll('a').forEach(a => {
+      if (!url && a.href.match('reboot')) url = a.href
+    })
+    return !!url
+  })
+  console.log('server url loaded')
+
+  const rebootUrl = await page.evaluate(() => {
+    let url
+    document.querySelectorAll('a').forEach(a => {
+      if (!url && a.href.match('reboot')) url = a.href
+    })
+    return url
+  })
+
   // go to reboot url
   console.log('going to reboot url')
   try {
@@ -91,3 +116,4 @@ const rebootServer = async () => {
 }
 
 module.exports = rebootServer
+rebootServer()
