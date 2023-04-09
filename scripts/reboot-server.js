@@ -9,7 +9,7 @@ assert(loginUrl && typeof loginUrl === 'string', `server info loginUrl '${loginU
 assert(serverUrl && typeof serverUrl === 'string', `server info serverUrl '${serverUrl}' invalid`)
 
 const puppeteerOptions = {
-  headless: false,
+  // headless: false,
   args:[
     `--user-data-dir=${path.resolve(__dirname, '..', 'chrome-profile')}`,
     '--no-sandbox'
@@ -116,4 +116,3 @@ const rebootServer = async () => {
 }
 
 module.exports = rebootServer
-rebootServer()
