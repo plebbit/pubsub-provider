@@ -3,7 +3,7 @@ const {toString} = require('uint8arrays/to-string')
 const {Buffer} = require('buffer')
 const {expect} = require('chai')
 
-const ipfsClientUrl = 'http://localhost:8080/api/v0'
+const ipfsClientUrl = 'http://localhost:8000/api/v0'
 const pubsubTopic = 'plebbit test'
 
 describe('pubsub-provider (local)', () => {

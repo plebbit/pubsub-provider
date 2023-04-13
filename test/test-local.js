@@ -3,7 +3,7 @@ const http = require('http')
 const {toString} = require('uint8arrays/to-string')
 
 const agent = new http.Agent({keepAlive: true, maxSockets: 99999})
-const url = 'http://localhost:8080/api/v0'
+const url = 'http://localhost:8000/api/v0'
 const ipfsClient = IpfsHttpClient.create({agent, url})
 
 ;(async () => {

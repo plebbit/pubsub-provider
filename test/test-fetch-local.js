@@ -52,7 +52,7 @@ const browserCloudflareHeaders2 = {
 }
 
 // const agent = new https.Agent({keepAlive: true, maxSockets: 99999})
-const url = 'http://localhost:8080/api/v0'
+const url = 'http://localhost:8000/api/v0'
 
 ;(async () => {
   const res = await fetch(`${url}/pubsub/sub?arg=ucGxlYmJpdCB0ZXN0OQ`, {method: 'POST', headers: browserCloudflareHeaders2})

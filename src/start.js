@@ -9,6 +9,7 @@ const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
 const {URL} = require('url')
 const {proxyLogs} = require('./start-logs')
+const {proxyIpfsGateway} = require('./ipfs-gateway')
 
 // use basic auth to have access to any ipfs api, not just pubsub
 let basicAuth
@@ -24,11 +25,8 @@ try {
 }
 catch (e) {}
 
-// edit ipfs config to remove gateway on port 8080 because it conflicts with proxy
-execSync(`${ipfsBinaryPath} config --json Addresses.Gateway null`, {stdio: 'inherit'})
-
 // start ipfs daemon
-const ipfsProcess = exec(`${ipfsBinaryPath} daemon --enable-pubsub-experiment`)
+const ipfsProcess = exec(`${ipfsBinaryPath} daemon --enable-pubsub-experiment --enable-namesys-pubsub`)
 console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
 ipfsProcess.stderr.on('data', console.error)
 ipfsProcess.stdin.on('data', debugIpfs)
@@ -78,7 +76,13 @@ const startServer = (port) => {
   server.on('request', async (req, res) => {
     // unrelated endpoints
     if (req.url === '/service-worker.js' || req.url === '/manifest.json' || req.url === '/favicon.ico') {
+      res.end()
       return
+    }
+
+    // ipfs gateway endpoints
+    if (req.method === 'GET' && (req.url.startsWith('/ipfs') || req.url.startsWith('/ipns'))) {
+      return proxyIpfsGateway(proxy, req, res)
     }
 
     // logs endpoints
@@ -114,6 +118,6 @@ const startServer = (port) => {
   server.listen(port)
   console.log(`proxy server listening on port ${port}`)
 }
-// listen on port 8080 because sometimes port 80 doesn't work
-startServer(8080)
+// listen on port 8000 because sometimes port 80 doesn't work
+startServer(8000)
 startServer(80)

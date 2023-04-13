@@ -3,7 +3,7 @@ const https = require('https')
 const ProxyAgent = require('https-proxy-agent')
 const {toString} = require('uint8arrays/to-string')
 
-// const agent = new ProxyAgent('http://user:pass@111.111.111.111:8080')
+// const agent = new ProxyAgent('http://user:pass@111.111.111.111:8000')
 const agent = new https.Agent({keepAlive: true, maxSockets: 99999})
 const url = 'https://pubsubprovider.xyz/api/v0'
 const ipfsClient = IpfsHttpClient.create({agent, url})
