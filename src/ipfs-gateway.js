@@ -34,7 +34,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     error = e
   }
 
-  debugGateway(new Date().toISOString(), req.method, req.url, /* req.rawHeaders,*/ fetched?.status, fetched?.statusText, error?.message)
+  debugGateway(req.method, req.url, fetched?.status, fetched?.statusText, error?.message, req.rawHeaders)
 
   // request timed out
   if (error?.message === 'The user aborted a request.') {

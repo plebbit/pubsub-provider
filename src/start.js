@@ -91,7 +91,7 @@ const startServer = (port) => {
     }
 
     // start of pubsub related endpoints
-    debugProxy(new Date().toISOString(), req.method, req.url, req.rawHeaders)
+    debugProxy(req.method, req.url, req.rawHeaders)
 
     // basic auth allows any api
     let reqHasBasicAuth = false
