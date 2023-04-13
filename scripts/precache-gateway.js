@@ -106,10 +106,13 @@ const fetchJson = async (url, options) => {
     if (text) {
       try {
         text = htmlToText.convert(text)
-        text = text.replaceAll('\n', ' ')
       }
       catch (e) {}
-      message += `: ${text.slice?.(0, 300)}`
+      text = text.replaceAll('\n', ' ')
+      if (text.length > 250) {
+        text = text.slice(0, 250) + '...'
+      }
+      message += `: '${text}'`
     }
     throw Error(message)
   }
