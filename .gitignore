@@ -1,4 +1,5 @@
 .deploy-env
+.deploy-precache-gateway-env
 test-remote-proxy.js
 proxy-url.js
 telegram-bot.js
