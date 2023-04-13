@@ -39,7 +39,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
   debugGateway(req.method, req.url, fetched?.status, fetched?.statusText, error?.message)
 
   // request timed out
-  if (error?.message === 'The user aborted a request.') {
+  if (error?.message === 'request timed out') {
     res.statusCode = timeoutStatus
     res.statusText = timeoutStatusText
     res.end()
@@ -78,8 +78,11 @@ const fetchWithTimeout = async (url, options) => {
   try {
     const response = await fetch(url, options)
     return response
-  } catch (error) {
-    throw (error)
+  } catch (e) {
+    if (e.message === 'The user aborted a request.') {
+      throw Error('request timed out')
+    }
+    throw (e)
   } finally {
     clearTimeout(timeout)
   }
