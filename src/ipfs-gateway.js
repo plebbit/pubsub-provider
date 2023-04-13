@@ -47,7 +47,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
   }
 
   // status was succeeded, but doesn't have json.signature, so is not plebbit content
-  if (fetched?.status < 300 && !json?.signature) {
+  if (fetched?.status < 300 && !isPlebbitJson(json)) {
     res.statusCode = 403
     res.end(plebbitErrorMessage)
     return
@@ -63,6 +63,9 @@ const proxyIpfsGateway = async (proxy, req, res) => {
   }
   proxy.web(req, res, {target: 'http://localhost:8080'})
 }
+
+// plebbit json either has signature or comments or allPostCount
+const isPlebbitJson = (json) => json?.signature || json?.comments || json?.allPostCount
 
 const maxTime = 180_000
 const fetchWithTimeout = async (url, options) => {
