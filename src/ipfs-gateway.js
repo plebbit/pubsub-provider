@@ -51,6 +51,14 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     return
   }
 
+  if (isIpns) {
+    // the ipns expires after 5 minutes (300 seconds), must revalidate if expired
+    res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate')
+  }
+  else {
+    // the ipfs is immutable, so set the cache a long time
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+  }
   proxy.web(req, res, {target: 'http://localhost:8080'})
 }
 
