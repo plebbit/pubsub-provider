@@ -76,7 +76,8 @@ const precacheSubplebbit = async (address) => {
         // console.log(`start fetching subplebbit '${address}' post '${postCid}'`)
         const post = await fetchJson(`${gatewayUrl}/ipfs/${postCid}`)
         if (post.ipnsName) {
-          await fetchJson(`${gatewayUrl}/ipns/${post.ipnsName}`)
+          const commentUpdate = await fetchJson(`${gatewayUrl}/ipns/${post.ipnsName}`)
+          // console.log({post, commentUpdate})
         }
         successCount++
       }
@@ -108,7 +109,7 @@ const fetchJson = async (url, options) => {
         text = text.replaceAll('\n', ' ')
       }
       catch (e) {}
-      message += `: ${text.slice?.(0, 200)}`
+      message += `: ${text.slice?.(0, 300)}`
     }
     throw Error(message)
   }
