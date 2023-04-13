@@ -10,6 +10,8 @@ const timeoutStatusText = 'Gateway Timeout'
 const ipfsApiUrl = 'http://localhost:5001/api/v0'
 
 const proxyIpfsGateway = async (proxy, req, res) => {
+  debugGateway(req.method, req.url, req.rawHeaders)
+
   // fix error 'has been blocked by CORS policy'
   res.setHeader('Access-Control-Allow-Origin', '*')
 
@@ -34,7 +36,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     error = e
   }
 
-  debugGateway(req.method, req.url, fetched?.status, fetched?.statusText, error?.message, req.rawHeaders)
+  debugGateway(req.method, req.url, fetched?.status, fetched?.statusText, error?.message)
 
   // request timed out
   if (error?.message === 'The user aborted a request.') {
