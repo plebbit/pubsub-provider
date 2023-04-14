@@ -15,6 +15,7 @@ docker run \
   --restart always \
   --log-opt max-size=10m \
   --log-opt max-file=5 \
+  --volume=$(pwd)/scripts:/usr/src/pubsub-provider/scripts \
   pubsub-provider \
   node scripts/precache-gateway
 
