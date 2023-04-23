@@ -31,3 +31,7 @@ node start
 # locally
 node test-remote
 ```
+
+#### Guides
+
+- Docker guide https://github.com/plebbit/pubsub-provider/blob/master/docs/docker-guide.md
