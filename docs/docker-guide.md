@@ -1,6 +1,6 @@
 #### 1. Install Docker
 
-- https://github.com/plebbit/pubsub-provider/blob/master/scripts/logs.sh
+- https://docs.docker.com/engine/install/ubuntu/
 
 #### 2. Clone the repo
 
