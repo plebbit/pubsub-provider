@@ -31,6 +31,11 @@ const allowedAddresses = new Set([
 const plebbitErrorMessage = 'this eth rpc only serves plebbit content'
 const noChainProviderUrlErrorMessage = `env variable 'ETH_PROVIDER_URL' not defined`
 
+let cache
+import('quick-lru').then(QuickLRU => {
+  cache = new QuickLRU.default({maxSize: 10000, maxAge: 1000 * 60 * 5})
+})
+
 // start proxy
 const proxy = httpProxy.createProxyServer({})
 
@@ -59,9 +64,15 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
 proxy.on('error', (e) => {
   console.error(e)
 })
-// proxy.on('proxyRes', (proxyRes, req, res) => {
-//   console.log(proxyRes)
-// })
+proxy.on('proxyRes', async (proxyRes, req, res) => {
+  // cache response
+  try {
+    const chunks = await getBodyChunks(proxyRes)
+    const resBody = chunks.join('')
+    cache.set(req.jsonBody, resBody)
+  }
+  catch (e) {}
+})
 proxy.on('upgrade', (req, socket, head) => {
   // proxy.ws(req, socket, head)
   debug('ws upgrade')
@@ -90,9 +101,11 @@ const startServer = (port) => {
 
     let body
     let bodyChunks = []
+    let jsonBody
     try {
       bodyChunks = await getBodyChunks(req)
-      body = JSON.parse(bodyChunks.join(''))
+      jsonBody = bodyChunks.join('')
+      body = JSON.parse(jsonBody)
     }
     catch (e) {
       debug(req.method, req.url, req.headers, 'failed parsing body')
@@ -107,7 +120,15 @@ const startServer = (port) => {
       return
     }
 
-    debug(req.method, req.url, req.headers, body)
+    // handle cache
+    const cached = cache.get(jsonBody)
+    debug(req.method, req.url, req.headers, body, `cached: ${!!cached}`)
+    if (cached) {
+      res.statusCode = 200
+      res.end(cached)
+      return
+    }
+    req.jsonBody = jsonBody
 
     // fix error 'has been blocked by CORS policy'
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -147,6 +168,7 @@ const getBodyChunks = (req) => new Promise((resolve, reject) => {
   req.on('end', () => {
     resolve(chunks)
   })
+  setTimeout(resolve, 5000)
 })
 
 // use this function in the proxy script
