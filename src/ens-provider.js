@@ -69,7 +69,7 @@ proxy.on('proxyRes', async (proxyRes, req, res) => {
   try {
     const chunks = await getBodyChunks(proxyRes)
     const resBody = chunks.join('')
-    cache.set(req.jsonBody, resBody)
+    cache?.set(req.jsonBody, resBody)
   }
   catch (e) {}
 })
@@ -121,7 +121,7 @@ const startServer = (port) => {
     }
 
     // handle cache
-    const cached = cache.get(jsonBody)
+    const cached = cache?.get(jsonBody)
     debug(req.method, req.url, req.headers, body, `cached: ${!!cached}`)
     if (cached) {
       res.statusCode = 200
