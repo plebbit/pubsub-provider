@@ -8,13 +8,14 @@
     "test": "mocha test/**/*.test.js",
     "test:browser": "karma start config/karma.conf.js",
     "remote-listen-subplebbits": "while true; do node test/test-remote-listen-subplebbits; sleep 1; done",
+    "test-flakiness": "while true; do node test/test-flakiness || echo crashed; sleep 1; done",
     "monitor": "while true; do node scripts/monitor; sleep 1; done"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "debug": "4.3.4",
-    "ethers": "6.1.0",
+    "ethers": "5.6.9",
     "express": "4.18.2",
     "html-to-text": "9.0.5",
     "http-proxy": "1.18.1",
@@ -24,10 +25,12 @@
     "p-queue": "6.6.2",
     "puppeteer": "15.4.0",
     "serve-index": "1.9.1",
+    "stream-array": "1.1.2",
     "telegraf": "4.8.5",
     "wait-on": "7.0.1"
   },
   "devDependencies": {
+    "@plebbit/plebbit-js": "https://github.com/plebbit/plebbit-js.git#bcf4ec7ba024fdd7dc0bb2fab76c27c93597dd50",
     "buffer": "6.0.3",
     "chai": "4.3.6",
     "dotenv": "16.0.1",

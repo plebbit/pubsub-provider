@@ -9,6 +9,7 @@ const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
 const {URL} = require('url')
 const {proxyLogs} = require('./start-logs')
+const {proxyEnsProvider} = require('./ens-provider')
 const {proxyIpfsGateway} = require('./ipfs-gateway')
 
 // use basic auth to have access to any ipfs api, not just pubsub
@@ -78,6 +79,10 @@ const startServer = (port) => {
     if (req.url === '/service-worker.js' || req.url === '/manifest.json' || req.url === '/favicon.ico') {
       res.end()
       return
+    }
+
+    if (req.method === 'POST' && req.url === '/') {
+      return proxyEnsProvider(proxy, req, res)
     }
 
     // ipfs gateway endpoints
