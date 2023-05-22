@@ -29,7 +29,7 @@ echo "$SCRIPT" | sshpass -p "$DEPLOY_PASSWORD" ssh "$DEPLOY_USER"@"$DEPLOY_HOST"
 
 # copy files
 FILE_NAMES=(
-
+  .env
 )
 
 # copy files
