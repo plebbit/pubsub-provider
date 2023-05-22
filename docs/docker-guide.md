@@ -1,16 +1,16 @@
 #### 1. Install Docker
 
-- https://github.com/plebbit/pubsub-provider/blob/master/scripts/logs.sh
+- https://docs.docker.com/engine/install/ubuntu/
 
 #### 2. Clone the repo
 
-```
+```sh
 git clone git@github.com:plebbit/pubsub-provider.git && cd pubsub-provider
 ```
 
 #### 3. Start docker
 
-```
+```sh
 scripts/start-docker.sh
 ```
 
@@ -18,14 +18,14 @@ scripts/start-docker.sh
 
 #### 4. Test that it works
 
-```
+```sh
 curl localhost:80/ipns/12D3KooWG3XbzoVyAE6Y9vHZKF64Yuuu4TjdgQKedk14iYmTEPWu
 
-or
+# or
 
 curl <ip-of-your-server>:80/ipns/12D3KooWG3XbzoVyAE6Y9vHZKF64Yuuu4TjdgQKedk14iYmTEPWu
 
-you should receive some JSON
+# you should receive some JSON
 ```
 
 > NOTE: if it doesn't work, maybe port 4001 isn't open on your server, tcp or udp 4001 must be open, preferably both
@@ -38,10 +38,10 @@ you should receive some JSON
 
 #### 5. Test that it works
 
-```
+```sh
 curl https://<your-domain-name>/ipns/12D3KooWG3XbzoVyAE6Y9vHZKF64Yuuu4TjdgQKedk14iYmTEPWu
 
-e.g.
+# e.g.
 
 curl https://ipfs.io/ipns/12D3KooWG3XbzoVyAE6Y9vHZKF64Yuuu4TjdgQKedk14iYmTEPWu
 ```
