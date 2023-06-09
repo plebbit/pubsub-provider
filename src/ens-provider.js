@@ -99,6 +99,18 @@ const startServer = (port) => {
       return
     }
 
+    // fix error 'has been blocked by CORS policy'
+    res.setHeader('Access-Control-Allow-Origin', '*')
+
+    // fix preflight cors
+    if (req.method === 'OPTIONS') {
+      debug(req.method, req.url, req.headers)
+      res.setHeader('Access-Control-Allow-Methods', 'POST')
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+      proxy.web(req, res, {target: chainProviderUrl, changeOrigin: true})
+      return
+    }
+
     let body
     let bodyChunks = []
     let jsonBody
@@ -129,9 +141,6 @@ const startServer = (port) => {
       return
     }
     req.jsonBody = jsonBody
-
-    // fix error 'has been blocked by CORS policy'
-    res.setHeader('Access-Control-Allow-Origin', '*')
 
     // expires after 5 minutes (300 seconds), must revalidate if expired
     // ENS must not be cached for too long otherwise user can't see his changes reflected

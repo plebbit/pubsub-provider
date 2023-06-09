@@ -63,6 +63,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('CF-Connecting-IP')
   proxyReq.removeHeader('CDN-Loop')
 })
+
 proxy.on('error', (e) => {
   console.error(e)
 })
