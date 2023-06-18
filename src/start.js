@@ -26,8 +26,16 @@ try {
 }
 catch (e) {}
 
+// turn off local discovery because sometimes it makes VPSes crash
+try {
+  execSync(`${ipfsBinaryPath} config --json Discovery.MDNS.Enabled false`, {stdio: 'inherit'})
+}
+catch (e) {
+  console.log(e)
+}
+
 // start ipfs daemon
-const ipfsProcess = exec(`${ipfsBinaryPath} daemon --enable-pubsub-experiment --enable-namesys-pubsub`)
+const ipfsProcess = exec(`${ipfsBinaryPath} daemon --migrate --enable-pubsub-experiment --enable-namesys-pubsub`)
 console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
 ipfsProcess.stderr.on('data', console.error)
 ipfsProcess.stdin.on('data', debugIpfs)
