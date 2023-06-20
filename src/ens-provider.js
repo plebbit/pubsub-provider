@@ -22,10 +22,12 @@ const allowedMethods = new Set([
 const allowedAddresses = new Set([
   // eth_chainId doesn't have a "to" field
   undefined,
-  // ENS PublicResolver
+  // ENS PublicResolver (used by ethers.js)
   '0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41',
-  // ENSRegistryWithFallback
-  '0x00000000000c2e074ec69a0dfb2997ba6c7d2e1e'
+  // ENSRegistryWithFallback (used by ethers.js)
+  '0x00000000000c2e074ec69a0dfb2997ba6c7d2e1e',
+  // UniversalResolver (used by viem)
+  '0xc0497e381f536be9ce14b0dd3817cbcae57d2f62'
 ])
 
 const plebbitErrorMessage = 'this eth rpc only serves plebbit content'
@@ -125,7 +127,7 @@ const startServer = (port) => {
       return
     }
 
-    if (!allowedMethods.has(body.method) || !allowedAddresses.has(body.params[0]?.to)) {
+    if (!allowedMethods.has(body.method) || !allowedAddresses.has(body.params[0]?.to?.toLowerCase?.())) {
       debug(req.method, req.url, req.headers, body, 'forbidden')
       res.statusCode = 403
       res.end(plebbitErrorMessage)
