@@ -28,7 +28,7 @@ catch (e) {}
 
 // turn off local discovery because sometimes it makes VPSes crash
 try {
-  execSync(`${ipfsBinaryPath} config --json Discovery.MDNS.Enabled false`, {stdio: 'inherit'})
+  execSync(`${ipfsBinaryPath} config profile apply server`, {stdio: 'inherit'})
 }
 catch (e) {
   console.log(e)
