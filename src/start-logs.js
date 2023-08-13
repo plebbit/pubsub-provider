@@ -82,7 +82,10 @@ const writeLog = async (subplebbitAddress, log) => {
     sorted.challengeRequestId = message.challengeRequestId
     log = JSON.stringify({...sorted, ...message})
   }
-  catch (e) {}
+  catch (e) {
+    debugLogs(e)
+  }
+  debugLogs(log)
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
