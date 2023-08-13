@@ -69,6 +69,9 @@ const subplebbits = [
 fs.ensureDirSync(logFolderPath)
 
 const writeLog = async (subplebbitAddress, log) => {
+  console.log({subplebbitAddress, log})
+  return
+
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
@@ -106,7 +109,7 @@ const pubsubLog = async (subplebbitAddress) => {
     ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
   }
   debugLogs({subplebbitAddress, ipnsName})
-  const onMessage = (message) => writeLog(subplebbitAddress, message?.data).catch(debugLogs)
+  const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
   onMessage({data: cborg.encode({test: 'test'})})
   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
