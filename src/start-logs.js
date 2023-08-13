@@ -8,7 +8,6 @@ const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
 const cborg = require('cborg')
 const {toString} = require('uint8arrays/to-string')
-const {fromString} = require('uint8arrays/from-string')
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfsClient = IpfsHttpClient.create({url: 'http://localhost:5001/api/v0'})
 const {resolveEnsTxtRecord} = require('./utils/ens')
@@ -69,6 +68,7 @@ const subplebbits = [
 fs.ensureDirSync(logFolderPath)
 
 const writeLog = async (subplebbitAddress, log) => {
+  console.log({subplebbitAddress, log})
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
@@ -105,25 +105,23 @@ const pubsubLog = async (subplebbitAddress) => {
   if (ipnsName.includes('.eth')) {
     ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
   }
-  debugLogs({subplebbitAddress, ipnsName})
   const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
-  onMessage({data: cborg.encode({test: 'test'})})
   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
 
 // start logging, after IPFS daemon is open
-// waitOn({resources: ['http://localhost:5001/webui']}).then(async () => {
-//   for (const subplebbit of subplebbits) {
-//     fs.ensureDirSync(path.resolve(logFolderPath, subplebbit.address))
-//     try {
-//       await pubsubLog(subplebbit.address)
-//       debugLogs('logging', subplebbit)
-//     }
-//     catch (e) {
-//       debugLogs('failed logging', subplebbit, e.message)
-//     }
-//   }
-// })
+waitOn({resources: ['http://localhost:5001/webui']}).then(async () => {
+  for (const subplebbit of subplebbits) {
+    fs.ensureDirSync(path.resolve(logFolderPath, subplebbit.address))
+    try {
+      await pubsubLog(subplebbit.address)
+      debugLogs('logging', subplebbit)
+    }
+    catch (e) {
+      debugLogs('failed logging', subplebbit, e.message)
+    }
+  }
+})
 
 // start server
 const port = 49302
@@ -141,7 +139,7 @@ server.listen(port)
 
 // use this function in the proxy script
 const proxyLogs = (proxy, req, res) => {
-  // proxy.web(req, res, {target: `http://localhost:${port}`})
+  proxy.web(req, res, {target: `http://localhost:${port}`})
 }
 
 module.exports = {proxyLogs}

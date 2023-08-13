@@ -3,19 +3,11 @@ cd "$root_path"
 
 docker rm -f pubsub-provider 2>/dev/null
 
-docker build \
-  --file config/Dockerfile \
-  --no-cache \
-  --tag pubsub-provider \
-  .  2>/dev/null
-
 # listen on 8000 and 80 ports because sometimes 80 doesn't work
 # 4001 is the ipfs p2p port
 docker run \
   --detach \
-  --volume=$(pwd)/.env:/usr/src/pubsub-provider/.env \
-  --volume=$(pwd)/basic-auth.js:/usr/src/pubsub-provider/basic-auth.js \
-  --volume=$(pwd)/logs:/usr/src/pubsub-provider/logs \
+  --volume=$(pwd):/usr/src/pubsub-provider \
   --name pubsub-provider \
   --restart always \
   --log-opt max-size=10m \
@@ -23,6 +15,6 @@ docker run \
   --publish 8000:8000 \
   --publish 80:80 \
   --publish 4001:4001 \
-  pubsub-provider
+  buildkite/puppeteer:10.0.0 sh -c "npm ci && npm start"
 
 docker logs --follow pubsub-provider
