@@ -68,6 +68,7 @@ const subplebbits = [
 fs.ensureDirSync(logFolderPath)
 
 const writeLog = async (subplebbitAddress, log) => {
+  console.log({subplebbitAddress, log})
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
