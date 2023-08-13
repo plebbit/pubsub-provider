@@ -10,6 +10,7 @@ const cborg = require('cborg')
 const {toString} = require('uint8arrays/to-string')
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfsClient = IpfsHttpClient.create({url: 'http://localhost:5001/api/v0'})
+const {resolveEnsTxtRecord} = require('./utils/ens')
 
 const subplebbits = [
   {
@@ -66,10 +67,10 @@ const subplebbits = [
 
 fs.ensureDirSync(logFolderPath)
 
-const writeLog = async (subplebbitAddress, log) => {
+const writeLog = async (subplebbit, log) => {
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
-  const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
+  const logFilePath = path.resolve(logFolderPath, subplebbit.address, date)
   // try to parse message and delete useless fields
   try {
     const message = cborg.decode(log)
@@ -88,7 +89,7 @@ const writeLog = async (subplebbitAddress, log) => {
     sorted.type = message.type
     sorted.challengeRequestId = message.challengeRequestId
     log = JSON.stringify({...sorted, ...message})
-    debugLogs(subplebbitAddress, log)
+    debugLogs(subplebbit.address, log)
   }
   catch (e) {
     try {log = toString(log)} catch (e) {}
@@ -99,16 +100,25 @@ const writeLog = async (subplebbitAddress, log) => {
 
 const pubsubLog = async (subplebbit) => {
   assert(subplebbit?.address)
+  let ipnsName = subplebbit.address
+  if (ipnsName.includes('.eth')) {
+    ipnsName = await resolveEnsTxtRecord(subplebbit.address, 'subplebbit-address')
+  }
   const onMessage = (message) => writeLog(subplebbit?.address, message?.data)
-  await ipfsClient.pubsub.subscribe(subplebbit?.address, onMessage)
+  await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
 
 // start logging, after IPFS daemon is open
 waitOn({resources: ['http://localhost:5001/webui']}).then(async () => {
   for (const subplebbit of subplebbits) {
     fs.ensureDirSync(path.resolve(logFolderPath, subplebbit.address))
-    await pubsubLog(subplebbit)
-    debugLogs('logging', subplebbit)
+    try {
+      await pubsubLog(subplebbit)
+      debugLogs('logging', subplebbit)
+    }
+    catch (e) {
+      debugLogs('failed logging', subplebbit, e.message)
+    }
   }
 })
 
