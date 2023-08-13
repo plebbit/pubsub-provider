@@ -8,9 +8,11 @@ const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
 const cborg = require('cborg')
 const {toString} = require('uint8arrays/to-string')
+const {fromString} = require('uint8arrays/from-string')
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfsClient = IpfsHttpClient.create({url: 'http://localhost:5001/api/v0'})
 const {resolveEnsTxtRecord} = require('./utils/ens')
+const base64 = require('multiformats/bases/base64')
 
 const subplebbits = [
   {
@@ -68,7 +70,6 @@ const subplebbits = [
 fs.ensureDirSync(logFolderPath)
 
 const writeLog = async (subplebbitAddress, log) => {
-  console.log({subplebbitAddress, log})
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
@@ -99,14 +100,36 @@ const writeLog = async (subplebbitAddress, log) => {
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
+// log using ipfs http client, possibly not as reliable because of http
+// const pubsubLog = async (subplebbitAddress) => {
+//   assert(subplebbitAddress)
+//   let ipnsName = subplebbitAddress
+//   if (ipnsName.includes('.eth')) {
+//     ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
+//   }
+//   const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
+//   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
+// }
+
 const pubsubLog = async (subplebbitAddress) => {
   assert(subplebbitAddress)
   let ipnsName = subplebbitAddress
   if (ipnsName.includes('.eth')) {
     ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
   }
-  const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
-  await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
+  const ipfsProcess = exec(`${ipfsBinaryPath} pubsub sub ${ipnsName} --enc=json`)
+  ipfsProcess.stderr.on('data', data => debugLogs('stderr', data))
+  ipfsProcess.stdin.on('data', data => debugLogs('stdin', data))
+  const onMessage = (message) => {
+    let data = JSON.parse(message).data
+    data = base64.base64url.decode(data)
+    return writeLog(subplebbitAddress, data)
+  }
+  ipfsProcess.stdout.on('data', onMessage)
+  ipfsProcess.on('error', data => debugLogs('error', data))
+  ipfsProcess.on('exit', () => {
+    debugLogs(`ipfs process with pid ${ipfsProcess.pid} exited`)
+  })
 }
 
 // start logging, after IPFS daemon is open
