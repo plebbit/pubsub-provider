@@ -3,7 +3,6 @@ const httpProxy = require('http-proxy')
 require('dotenv').config()
 const Debug = require('debug')
 const debug = Debug('pubsub-provider:ens-provider')
-Debug.enable('pubsub-provider:*')
 const streamify = require('stream-array')
 
 const chainProviderUrl = process.env.ETH_PROVIDER_URL
