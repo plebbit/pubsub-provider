@@ -8,6 +8,7 @@ const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
 const cborg = require('cborg')
 const {toString} = require('uint8arrays/to-string')
+const {fromString} = require('uint8arrays/from-string')
 const IpfsHttpClient = require('ipfs-http-client')
 const ipfsClient = IpfsHttpClient.create({url: 'http://localhost:5001/api/v0'})
 const {resolveEnsTxtRecord} = require('./utils/ens')
@@ -68,7 +69,6 @@ const subplebbits = [
 fs.ensureDirSync(logFolderPath)
 
 const writeLog = async (subplebbitAddress, log) => {
-  console.log({subplebbitAddress, log})
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
@@ -105,7 +105,9 @@ const pubsubLog = async (subplebbitAddress) => {
   if (ipnsName.includes('.eth')) {
     ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
   }
-  const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
+  debugLogs({subplebbitAddress, ipnsName})
+  const onMessage = (message) => writeLog(subplebbitAddress, message?.data).catch(debugLogs)
+  onMessage({data: cborg.encode({test: 'test'})})
   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
 
