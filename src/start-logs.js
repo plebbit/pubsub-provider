@@ -67,10 +67,10 @@ const subplebbits = [
 
 fs.ensureDirSync(logFolderPath)
 
-const writeLog = async (subplebbit, log) => {
+const writeLog = async (subplebbitAddress, log) => {
   const timestamp = new Date().toISOString().split('.')[0]
   const date = timestamp.split('T')[0]
-  const logFilePath = path.resolve(logFolderPath, subplebbit.address, date)
+  const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
   // try to parse message and delete useless fields
   try {
     const message = cborg.decode(log)
@@ -89,7 +89,7 @@ const writeLog = async (subplebbit, log) => {
     sorted.type = message.type
     sorted.challengeRequestId = message.challengeRequestId
     log = JSON.stringify({...sorted, ...message})
-    debugLogs(subplebbit.address, log)
+    debugLogs(subplebbitAddress, log)
   }
   catch (e) {
     try {log = toString(log)} catch (e) {}
@@ -104,7 +104,7 @@ const pubsubLog = async (subplebbit) => {
   if (ipnsName.includes('.eth')) {
     ipnsName = await resolveEnsTxtRecord(subplebbit.address, 'subplebbit-address')
   }
-  const onMessage = (message) => writeLog(subplebbit?.address, message?.data)
+  const onMessage = (message) => writeLog(subplebbit.address, message?.data)
   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
 
