@@ -95,7 +95,8 @@ const writeLog = async (subplebbitAddress, log) => {
 
 const pubsubLog = async (subplebbit) => {
   assert(subplebbit?.address)
-  await ipfsClient.pubsub.subscribe(subplebbit?.address, (message) => writeLog(subplebbit?.address, message))
+  const onMessage = (message) => writeLog(subplebbit?.address, message?.data)
+  await ipfsClient.pubsub.subscribe(subplebbit?.address, onMessage)
 }
 
 // start logging, after IPFS daemon is open
