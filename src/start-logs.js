@@ -7,7 +7,9 @@ const assert = require('assert')
 const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
 const cborg = require('cborg')
-const {fromString: uint8ArrayFromString} = require('uint8arrays/from-string')
+const {toString} = require('uint8arrays/to-string')
+const IpfsHttpClient = require('ipfs-http-client')
+const ipfsClient = IpfsHttpClient.create({url: 'http://localhost:5001/api/v0'})
 
 const subplebbits = [
   {
@@ -70,7 +72,7 @@ const writeLog = async (subplebbitAddress, log) => {
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
   // try to parse message and delete useless fields
   try {
-    const message = cborg.decode(uint8ArrayFromString(log))
+    const message = cborg.decode(log)
     delete message.encryptedPublication
     delete message.encryptedChallenges
     delete message.encryptedChallengeAnswers
@@ -85,30 +87,23 @@ const writeLog = async (subplebbitAddress, log) => {
     debugLogs(log)
   }
   catch (e) {
+    try {log = toString(log)} catch (e) {}
     debugLogs(e, log?.substring?.(0, 200))
   }
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
-const pubsubLog = (subplebbit) => {
+const pubsubLog = async (subplebbit) => {
   assert(subplebbit?.address)
-  const ipfsProcess = exec(`${ipfsBinaryPath} pubsub sub ${subplebbit.address}`)
-  ipfsProcess.stderr.on('data', data => debugLogs('stderr', data))
-  ipfsProcess.stdin.on('data', data => debugLogs('stdin', data))
-  // ipfsProcess.stdout.on('data', data => debugLogs('stdout', data))
-  ipfsProcess.stdout.on('data', data => writeLog(subplebbit.address, data).catch(debugLogs))
-  ipfsProcess.on('error', data => debugLogs('error', data))
-  ipfsProcess.on('exit', () => {
-    debugLogs(`ipfs process with pid ${ipfsProcess.pid} exited`)
-  })
+  await ipfsClient.pubsub.subscribe(subplebbit?.address, (message) => writeLog(subplebbit?.address, message))
 }
 
 // start logging, after IPFS daemon is open
-waitOn({resources: ['http://localhost:5001/webui']}).then(() => {
+waitOn({resources: ['http://localhost:5001/webui']}).then(async () => {
   for (const subplebbit of subplebbits) {
     fs.ensureDirSync(path.resolve(logFolderPath, subplebbit.address))
+    await pubsubLog(subplebbit)
     debugLogs('logging', subplebbit)
-    pubsubLog(subplebbit)
   }
 })
 
