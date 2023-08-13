@@ -1,6 +1,7 @@
 const ethers = require('ethers')
+const chainProviderUrl = process.env.ETH_PROVIDER_URL
 
-const resolveEnsTxtRecord = async (ensName, txtRecordName, chainProviderUrl) => {
+const resolveEnsTxtRecord = async (ensName, txtRecordName) => {
   try {
     let ethProvider
     if (chainProviderUrl) {
