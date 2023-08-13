@@ -1,3 +1,4 @@
+require('dotenv').config()
 const ethers = require('ethers')
 const chainProviderUrl = process.env.ETH_PROVIDER_URL
 
