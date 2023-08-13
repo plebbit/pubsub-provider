@@ -79,17 +79,14 @@ const writeLog = async (subplebbitAddress, log) => {
     delete message.acceptedChallengeTypes
     delete message.protocolVersion
     delete message.signature
+    try {
+      message.challengeRequestId = toString(message.challengeRequestId, 'base58btc')
+    }
+    catch (e) {}
     // sort the json props so they are easier to read in the logs
     const sorted = {}
     sorted.type = message.type
     sorted.challengeRequestId = message.challengeRequestId
-      console.log(message.challengeRequestId)
-    try {
-      sorted.challengeRequestId = toString(message.challengeRequestId, 'base58btc')
-    }
-    catch (e) {
-      console.log(e)
-    }
     log = JSON.stringify({...sorted, ...message})
     debugLogs(log)
   }
