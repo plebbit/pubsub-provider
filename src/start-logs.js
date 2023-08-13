@@ -7,6 +7,7 @@ const assert = require('assert')
 const waitOn = require('wait-on')
 const debugLogs = require('debug')('pubsub-provider:logs')
 const cborg = require('cborg')
+const {fromString: uint8ArrayFromString} = require('uint8arrays/from-string')
 
 const subplebbits = [
   {
@@ -69,7 +70,7 @@ const writeLog = async (subplebbitAddress, log) => {
   const logFilePath = path.resolve(logFolderPath, subplebbitAddress, date)
   // try to parse message and delete useless fields
   try {
-    const message = cborg.decode(log)
+    const message = cborg.decode(uint8ArrayFromString(log))
     delete message.encryptedPublication
     delete message.encryptedChallenges
     delete message.encryptedChallengeAnswers
