@@ -98,13 +98,13 @@ const writeLog = async (subplebbitAddress, log) => {
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
 
-const pubsubLog = async (subplebbit) => {
-  assert(subplebbit?.address)
-  let ipnsName = subplebbit.address
+const pubsubLog = async (subplebbitAddress) => {
+  assert(subplebbitAddress)
+  let ipnsName = subplebbitAddress
   if (ipnsName.includes('.eth')) {
-    ipnsName = await resolveEnsTxtRecord(subplebbit.address, 'subplebbit-address')
+    ipnsName = await resolveEnsTxtRecord(subplebbitAddress, 'subplebbit-address')
   }
-  const onMessage = (message) => writeLog(subplebbit.address, message?.data)
+  const onMessage = (message) => writeLog(subplebbitAddress, message?.data)
   await ipfsClient.pubsub.subscribe(ipnsName, onMessage)
 }
 
@@ -113,7 +113,7 @@ waitOn({resources: ['http://localhost:5001/webui']}).then(async () => {
   for (const subplebbit of subplebbits) {
     fs.ensureDirSync(path.resolve(logFolderPath, subplebbit.address))
     try {
-      await pubsubLog(subplebbit)
+      await pubsubLog(subplebbit.address)
       debugLogs('logging', subplebbit)
     }
     catch (e) {
