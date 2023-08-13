@@ -85,7 +85,7 @@ const writeLog = async (subplebbitAddress, log) => {
     debugLogs(log)
   }
   catch (e) {
-    debugLogs(e)
+    debugLogs(e, log?.substring?.(0, 200))
   }
   await fs.appendFile(logFilePath, `${timestamp} ${log}\r\n\r\n`)
 }
