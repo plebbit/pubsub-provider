@@ -83,6 +83,10 @@ const writeLog = async (subplebbitAddress, log) => {
     const sorted = {}
     sorted.type = message.type
     sorted.challengeRequestId = message.challengeRequestId
+    try {
+      sorted.challengeRequestId = toString(message.challengeRequestId, 'base58btc')
+    }
+    catch (e) {}
     log = JSON.stringify({...sorted, ...message})
     debugLogs(log)
   }
