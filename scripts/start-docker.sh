@@ -16,6 +16,6 @@ docker run \
   --publish 8000:8000 \
   --publish 80:80 \
   --publish 4001:4001 \
-  node:16 sh -c "npm ci && npm start"
+  node:16 sh -c "PUPPETEER_SKIP_DOWNLOAD=1 npm ci && npm start"
 
 docker logs --follow pubsub-provider
