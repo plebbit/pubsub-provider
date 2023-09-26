@@ -3,7 +3,7 @@ const httpProxy = require('http-proxy')
 const Debug = require('debug')
 const debugProxy = require('debug')('pubsub-provider:proxy')
 const debugIpfs = require('debug')('pubsub-provider:ipfs')
-Debug.enable('pubsub-provider:*')
+// Debug.enable('pubsub-provider:*')
 const {execSync, exec} = require('child_process')
 const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
@@ -86,13 +86,14 @@ const startServer = (port) => {
   server.on('request', async (req, res) => {
     // test endpoint
     if (req.url.startsWith('/test/')) {
-      let ms
+      console.log(req.method, req.url)
+      let seconds
       try {
-        ms = req.url.split('/').pop()
-        await new Promise(r => setTimeout(r, ms))
+        seconds = req.url.split('/').pop()
+        await new Promise(r => setTimeout(r, seconds * 1000))
       }
       catch (e) {}
-      res.end(ms)
+      res.end(seconds)
       return
     }
 
