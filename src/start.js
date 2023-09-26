@@ -84,6 +84,18 @@ const startServer = (port) => {
   server.keepAliveTimeout = 0
 
   server.on('request', async (req, res) => {
+    // test endpoint
+    if (req.url.startsWith('/test/')) {
+      let ms
+      try {
+        ms = req.url.split('/').pop()
+        await new Promise(r => setTimeout(r, ms))
+      }
+      catch (e) {}
+      res.end(ms)
+      return
+    }
+
     // unrelated endpoints
     if (req.url === '/service-worker.js' || req.url === '/manifest.json' || req.url === '/favicon.ico') {
       res.end()
