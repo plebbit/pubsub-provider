@@ -87,13 +87,15 @@ const startServer = (port) => {
     if (req.url.startsWith('/test/')) {
       console.log(req.method, req.headers.host, req.url)
       const subdomain = req.url.split(['/'])[2]
-      res.writeHead(302, {'Location': `http://test${subdomain}.${req.headers.host}/`})
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.writeHead(302, {'Location': `https://test${subdomain}.${req.headers.host}/`})
       res.end()
       return
     }
     if (req.headers.host.startsWith('test')) {
       console.log(req.method, req.headers.host, req.url)
       await new Promise(r => setTimeout(r, 5 * 60 * 1000))
+      res.setHeader('Access-Control-Allow-Origin', '*')
       res.end('ok')
       return
     }
