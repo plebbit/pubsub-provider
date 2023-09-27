@@ -7,7 +7,7 @@ const plebbitErrorMessage = 'this ipfs gateway only serves plebbit content'
 const timeoutStatus = 504
 const timeoutStatusText = 'Gateway Timeout'
 
-const ipfsApiUrl = 'http://localhost:5001/api/v0'
+const ipfsApiUrl = 'http://127.0.0.1:5001/api/v0'
 
 const proxyIpfsGateway = async (proxy, req, res) => {
   debugGateway(req.method, req.url, req.rawHeaders)
@@ -65,7 +65,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     }
   }
 
-  proxy.web(req, res, {target: 'http://localhost:8080'})
+  proxy.web(req, res, {target: 'http://127.0.0.1:8080', headers: {'X-Forwarded-Proto': 'https'}})
 }
 
 // plebbit json either has signature or comments or allPostCount

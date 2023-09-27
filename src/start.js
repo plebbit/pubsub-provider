@@ -36,11 +36,18 @@ catch (e) {
 }
 
 // config gateway to use subdomains to bypass browser 6 connections per host limit
-try {
-  execSync(`${ipfsBinaryPath} config --json Gateway.PublicGateways '{"gatewayhost": {"UseSubdomains": true, "Paths": ["/ipfs", "/ipns"]}}'`, {stdio: 'inherit'})
-}
-catch (e) {
-  console.log(e)
+let configedPublicGatewaysOnce = false
+const configPublicGatewaysOnce = (host) => {
+  if (configedPublicGatewaysOnce) {
+    return
+  }
+  configedPublicGatewaysOnce = true
+  try {
+    execSync(`${ipfsBinaryPath} config --json Gateway.PublicGateways '{"${host}": {"UseSubdomains": true, "Paths": ["/ipfs", "/ipns"]}}'`, {stdio: 'inherit'})
+  }
+  catch (e) {
+    console.log(e)
+  }
 }
 
 // start ipfs daemon
@@ -67,7 +74,6 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('CF-IPCountry')
   proxyReq.removeHeader('X-Forwarded-For')
   proxyReq.removeHeader('CF-RAY')
-  proxyReq.removeHeader('X-Forwarded-Proto')
   proxyReq.removeHeader('CF-Visitor')
   proxyReq.removeHeader('sec-ch-ua')
   proxyReq.removeHeader('sec-ch-ua-mobile')
@@ -105,6 +111,7 @@ const startServer = (port) => {
 
     // ipfs gateway endpoints
     if (req.method === 'GET' && (req.url.startsWith('/ipfs') || req.url.startsWith('/ipns'))) {
+      configPublicGatewaysOnce(req.headers.host)
       return proxyIpfsGateway(proxy, req, res)
     }
 
