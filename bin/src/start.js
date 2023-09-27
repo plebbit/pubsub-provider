@@ -3,7 +3,8 @@ const httpProxy = require('http-proxy')
 const Debug = require('debug')
 const debugProxy = require('debug')('pubsub-provider:proxy')
 const debugIpfs = require('debug')('pubsub-provider:ipfs')
-Debug.enable('pubsub-provider:*')
+// Debug.enable('pubsub-provider:*')
+// Debug.enable('pubsub-provider:ipfs-gateway')
 const {execSync, exec} = require('child_process')
 const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
@@ -34,20 +35,44 @@ catch (e) {
   console.log(e)
 }
 
+// config gateway to use subdomains to bypass browser 6 connections per host limit
+let configedPublicGatewaysOnce = false
+const configPublicGatewaysOnce = (host) => {
+  if (configedPublicGatewaysOnce) {
+    return
+  }
+  try {
+    execSync(`${ipfsBinaryPath} config --json Gateway.PublicGateways '{"${host}": {"UseSubdomains": true, "Paths": ["/ipfs", "/ipns"]}}'`, {stdio: 'inherit'})
+  }
+  catch (e) {
+    console.log(e)
+  }
+  configedPublicGatewaysOnce = true
+}
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  console.log(res, req)
+  res.end('ok')
+});
+server.listen(8080, '127.0.0.1', () => {
+  console.log('Server running');
+}); 
+
 // start ipfs daemon
-const ipfsProcess = exec(`${ipfsBinaryPath} daemon --migrate --enable-pubsub-experiment --enable-namesys-pubsub`)
-console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
-ipfsProcess.stderr.on('data', console.error)
-ipfsProcess.stdin.on('data', debugIpfs)
-ipfsProcess.stdout.on('data', debugIpfs)
-ipfsProcess.on('error', console.error)
-ipfsProcess.on('exit', () => {
-  console.error(`ipfs process with pid ${ipfsProcess.pid} exited`)
-  process.exit(1)
-})
-process.on("exit", () => {
-  exec(`kill ${ipfsProcess.pid + 1}`)
-})
+// const ipfsProcess = exec(`${ipfsBinaryPath} daemon --migrate --enable-pubsub-experiment --enable-namesys-pubsub`)
+// console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
+// ipfsProcess.stderr.on('data', console.error)
+// ipfsProcess.stdin.on('data', debugIpfs)
+// ipfsProcess.stdout.on('data', debugIpfs)
+// ipfsProcess.on('error', console.error)
+// ipfsProcess.on('exit', () => {
+//   console.error(`ipfs process with pid ${ipfsProcess.pid} exited`)
+//   process.exit(1)
+// })
+// process.on("exit", () => {
+//   exec(`kill ${ipfsProcess.pid + 1}`)
+// })
 
 // start proxy
 const proxy = httpProxy.createProxyServer({})
@@ -58,7 +83,6 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('CF-IPCountry')
   proxyReq.removeHeader('X-Forwarded-For')
   proxyReq.removeHeader('CF-RAY')
-  proxyReq.removeHeader('X-Forwarded-Proto')
   proxyReq.removeHeader('CF-Visitor')
   proxyReq.removeHeader('sec-ch-ua')
   proxyReq.removeHeader('sec-ch-ua-mobile')
@@ -70,6 +94,10 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('referer')
   proxyReq.removeHeader('CF-Connecting-IP')
   proxyReq.removeHeader('CDN-Loop')
+})
+
+proxy.on('proxyRes', function(proxyRes, req, res) {
+  console.log(req)
 })
 
 proxy.on('error', (e) => {
@@ -90,12 +118,23 @@ const startServer = (port) => {
       return
     }
 
+    // ens provider endpoint
     if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/') {
       return proxyEnsProvider(proxy, req, res)
     }
 
     // ipfs gateway endpoints
     if (req.method === 'GET' && (req.url.startsWith('/ipfs') || req.url.startsWith('/ipns'))) {
+      configPublicGatewaysOnce(req.headers.host)
+      return proxyIpfsGateway(proxy, req, res)
+    }
+
+    // ipfs gateway subdomain endpoints
+    if (req.method === 'GET' && req.url === '/') {
+      const subdomain = req.headers.host.split('.', 2)[1]
+      if (subdomain === 'ipfs' || subdomain === 'ipns') {
+        return proxyIpfsGateway(proxy, req, res)
+      }
       return proxyIpfsGateway(proxy, req, res)
     }
 
@@ -105,7 +144,7 @@ const startServer = (port) => {
     }
 
     // start of pubsub related endpoints
-    debugProxy(req.method, req.url, req.rawHeaders)
+    debugProxy(req.method, req.headers.host, req.url, req.rawHeaders)
 
     // basic auth allows any api
     let reqHasBasicAuth = false

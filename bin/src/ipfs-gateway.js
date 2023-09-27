@@ -7,7 +7,7 @@ const plebbitErrorMessage = 'this ipfs gateway only serves plebbit content'
 const timeoutStatus = 504
 const timeoutStatusText = 'Gateway Timeout'
 
-const ipfsApiUrl = 'http://localhost:5001/api/v0'
+const ipfsApiUrl = 'http://127.0.0.1:5001/api/v0'
 
 const proxyIpfsGateway = async (proxy, req, res) => {
   debugGateway(req.method, req.url, req.rawHeaders)
@@ -15,14 +15,25 @@ const proxyIpfsGateway = async (proxy, req, res) => {
   // fix error 'has been blocked by CORS policy'
   res.setHeader('Access-Control-Allow-Origin', '*')
 
-  const split = req.url.split('/')
-  const isIpns = split[1] === 'ipns'
-  let cid = !isIpns ? split[2] : undefined
+  let cid, ipnsName, isIpns
+  // is subdomain cid gateway request
+  if (req.url === '/') {
+    const split = req.headers.host.split('.', 2)
+    isIpns = split[1] === 'ipns'
+    cid = !isIpns ? split[0] : undefined
+    ipnsName = isIpns ? split[0] : undefined  
+  }
+  // is regular gateway request
+  else {
+    const split = req.url.split('/')
+    isIpns = split[1] === 'ipns'
+    cid = !isIpns ? split[2] : undefined
+    ipnsName = isIpns ? split[2] : undefined  
+  }
 
   let fetched, text, error, json
   try {
     if (isIpns) {
-      const ipnsName = split[2]
       const fetched = await fetchWithTimeout(`${ipfsApiUrl}/name/resolve?arg=${ipnsName}`, {method: 'POST'})
       const text = await fetched.text()
       cid = JSON.parse(text).Path.split('/')[2]
@@ -36,7 +47,7 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     error = e
   }
 
-  debugGateway(req.method, req.url, fetched?.status, fetched?.statusText, error?.message)
+  debugGateway(req.method, req.headers.host, req.url, fetched?.status, fetched?.statusText, error?.message)
 
   // request timed out
   if (error?.message === 'request timed out') {
@@ -65,11 +76,11 @@ const proxyIpfsGateway = async (proxy, req, res) => {
     }
   }
 
-  proxy.web(req, res, {target: 'http://localhost:8080'})
+  proxy.web(req, res, {target: 'http://127.0.0.1:8080', headers: {'X-Forwarded-Proto': 'https'}})
 }
 
 // plebbit json either has signature or comments or allPostCount
-const isPlebbitJson = (json) => json?.signature || json?.comments || json?.allPostCount
+const isPlebbitJson = (json) => true //json?.signature || json?.comments || json?.allPostCount
 
 const maxTime = 180_000
 const fetchWithTimeout = async (url, options) => {
