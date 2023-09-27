@@ -41,13 +41,13 @@ const configPublicGatewaysOnce = (host) => {
   if (configedPublicGatewaysOnce) {
     return
   }
-  configedPublicGatewaysOnce = true
   try {
     execSync(`${ipfsBinaryPath} config --json Gateway.PublicGateways '{"${host}": {"UseSubdomains": true, "Paths": ["/ipfs", "/ipns"]}}'`, {stdio: 'inherit'})
   }
   catch (e) {
     console.log(e)
   }
+  configedPublicGatewaysOnce = true
 }
 
 // start ipfs daemon
