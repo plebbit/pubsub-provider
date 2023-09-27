@@ -4,7 +4,7 @@ const Debug = require('debug')
 const debugProxy = require('debug')('pubsub-provider:proxy')
 const debugIpfs = require('debug')('pubsub-provider:ipfs')
 // Debug.enable('pubsub-provider:*')
-Debug.enable('pubsub-provider:ipfs-gateway')
+// Debug.enable('pubsub-provider:ipfs-gateway')
 const {execSync, exec} = require('child_process')
 const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
@@ -50,20 +50,29 @@ const configPublicGatewaysOnce = (host) => {
   configedPublicGatewaysOnce = true
 }
 
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  console.log(res, req)
+  res.end('ok')
+});
+server.listen(8080, '127.0.0.1', () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+}); 
+
 // start ipfs daemon
-const ipfsProcess = exec(`${ipfsBinaryPath} daemon --migrate --enable-pubsub-experiment --enable-namesys-pubsub`)
-console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
-ipfsProcess.stderr.on('data', console.error)
-ipfsProcess.stdin.on('data', debugIpfs)
-ipfsProcess.stdout.on('data', debugIpfs)
-ipfsProcess.on('error', console.error)
-ipfsProcess.on('exit', () => {
-  console.error(`ipfs process with pid ${ipfsProcess.pid} exited`)
-  process.exit(1)
-})
-process.on("exit", () => {
-  exec(`kill ${ipfsProcess.pid + 1}`)
-})
+// const ipfsProcess = exec(`${ipfsBinaryPath} daemon --migrate --enable-pubsub-experiment --enable-namesys-pubsub`)
+// console.log(`ipfs process started with pid ${ipfsProcess.pid}`)
+// ipfsProcess.stderr.on('data', console.error)
+// ipfsProcess.stdin.on('data', debugIpfs)
+// ipfsProcess.stdout.on('data', debugIpfs)
+// ipfsProcess.on('error', console.error)
+// ipfsProcess.on('exit', () => {
+//   console.error(`ipfs process with pid ${ipfsProcess.pid} exited`)
+//   process.exit(1)
+// })
+// process.on("exit", () => {
+//   exec(`kill ${ipfsProcess.pid + 1}`)
+// })
 
 // start proxy
 const proxy = httpProxy.createProxyServer({})
@@ -85,8 +94,6 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('referer')
   proxyReq.removeHeader('CF-Connecting-IP')
   proxyReq.removeHeader('CDN-Loop')
-
-  proxyReq.setHeader('Host', 'ipfsgateway.xyz')
 })
 
 proxy.on('proxyRes', function(proxyRes, req, res) {
