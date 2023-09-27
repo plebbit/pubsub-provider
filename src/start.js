@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
   res.end('ok')
 });
 server.listen(8080, '127.0.0.1', () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log('Server running');
 }); 
 
 // start ipfs daemon
