@@ -91,7 +91,7 @@ const startServer = (port) => {
       res.end()
       return
     }
-    if (req.host.startsWith('test')) {
+    if (req.headers.host.startsWith('test')) {
       console.log(req.method, req.headers.host, req.url)
       await new Promise(r => setTimeout(r, 5 * 60 * 1000))
       res.end('ok')
