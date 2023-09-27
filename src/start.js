@@ -85,6 +85,12 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('referer')
   proxyReq.removeHeader('CF-Connecting-IP')
   proxyReq.removeHeader('CDN-Loop')
+
+  proxyReq.setHeader('Host', 'ipfsgateway.xyz')
+})
+
+proxy.on('proxyRes', function(proxyRes, req, res) {
+  console.log(req)
 })
 
 proxy.on('error', (e) => {
