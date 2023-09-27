@@ -105,6 +105,7 @@ const startServer = (port) => {
       return
     }
 
+    // ens provider endpoint
     if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/') {
       return proxyEnsProvider(proxy, req, res)
     }
@@ -115,13 +116,22 @@ const startServer = (port) => {
       return proxyIpfsGateway(proxy, req, res)
     }
 
+    // ipfs gateway subdomain endpoints
+    if (req.method === 'GET' && req.url === '/') {
+      const subdomain = req.headers.host.split('.', 2)[1]
+      if (subdomain === 'ipfs' || subdomain === 'ipns') {
+        return proxyIpfsGateway(proxy, req, res)
+      }
+      return proxyIpfsGateway(proxy, req, res)
+    }
+
     // logs endpoints
     if (req.url.startsWith('/logs')) {
       return proxyLogs(proxy, req, res)
     }
 
     // start of pubsub related endpoints
-    debugProxy(req.method, req.url, req.rawHeaders)
+    debugProxy(req.method, req.headers.host, req.url, req.rawHeaders)
 
     // basic auth allows any api
     let reqHasBasicAuth = false
