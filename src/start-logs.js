@@ -76,9 +76,7 @@ const writeLog = async (subplebbitAddress, log) => {
   // try to parse message and delete useless fields
   try {
     const message = cborg.decode(log)
-    delete message.encryptedPublication
-    delete message.encryptedChallenges
-    delete message.encryptedChallengeAnswers
+    delete message.encrypted
     delete message.acceptedChallengeTypes
     delete message.protocolVersion
     delete message.signature
