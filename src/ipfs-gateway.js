@@ -56,8 +56,8 @@ const proxyIpfsGateway = async (proxy, req, res) => {
   // set custom cache if request is successful
   if (fetched?.status < 300) {
     if (isIpns) {
-      // the ipns expires after 5 minutes (300 seconds), must revalidate if expired
-      res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate')
+      // the ipns expires after 1 minutes (60 seconds), must revalidate if expired
+      res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate')
     }
     else {
       // the ipfs is immutable, so set the cache a long time
