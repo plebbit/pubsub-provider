@@ -93,7 +93,6 @@ const startServer = (port) => {
 
     // .sol provider
     if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/' && req.headers['access-control-request-headers']?.includes('solana-client')) {
-      console.log('using sol')
       return proxySnsProvider(proxy, req, res)
     }
 
