@@ -9,6 +9,7 @@ const ipfsBinaryPath = require('path').join(__dirname, '..', 'bin', 'ipfs')
 const fs = require('fs')
 const {URL} = require('url')
 const {proxyLogs} = require('./start-logs')
+const {proxySnsProvider} = require('./sns-provider')
 const {proxyEnsProvider} = require('./ens-provider')
 const {proxyIpfsGateway} = require('./ipfs-gateway')
 
@@ -90,6 +91,13 @@ const startServer = (port) => {
       return
     }
 
+    // .sol provider
+    if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/' && req.headers['access-control-request-headers']?.includes('solana-client')) {
+      console.log('using sol')
+      return proxySnsProvider(proxy, req, res)
+    }
+
+    // .eth provider
     if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/') {
       return proxyEnsProvider(proxy, req, res)
     }
