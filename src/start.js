@@ -77,6 +77,11 @@ proxy.on('error', (e) => {
   console.error(e)
 })
 
+const isSnsProvider = (req) => 
+  req.url === '/' 
+  && (req.method === 'POST' || req.method === 'OPTIONS')
+  && (req.headers['access-control-request-headers']?.includes('solana-client') || req.headers['solana-client'])
+
 // start server
 const startServer = (port) => {
   const server = http.createServer()
@@ -92,7 +97,7 @@ const startServer = (port) => {
     }
 
     // .sol provider
-    if ((req.method === 'POST' || req.method === 'OPTIONS') && req.url === '/' && req.headers['access-control-request-headers']?.includes('solana-client')) {
+    if (isSnsProvider(req)) {
       return proxySnsProvider(proxy, req, res)
     }
 

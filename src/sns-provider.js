@@ -24,8 +24,6 @@ const proxy = httpProxy.createProxyServer({})
 
 // rewrite the request
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
-  debug('proxyReq', proxyReq)
-
   // remove headers that could potentially cause an ipfs 403 error
   proxyReq.removeHeader('CF-IPCountry')
   proxyReq.removeHeader('X-Forwarded-For')
@@ -44,7 +42,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('CDN-Loop')
 
   // fix bug where path name has extra / added after
-  proxyReq.path = chainProvider.pathname
+  proxyReq.path = chainProvider.pathname + chainProvider.search
 })
 proxy.on('error', (e) => {
   console.error(e)
@@ -140,12 +138,6 @@ const startServer = (port) => {
     })
   })
   server.on('error', console.error)
-
-  // proxy websocket
-  server.on('upgrade', function (req, socket, head) {
-    debug('upgrade', req)
-    proxy.ws(req, socket, head)
-  })
 
   server.listen(port)
   console.log(`proxy server listening on port ${port}`)

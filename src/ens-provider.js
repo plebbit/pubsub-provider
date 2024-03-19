@@ -60,7 +60,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.removeHeader('CDN-Loop')
 
   // fix bug where path name has extra / added after
-  proxyReq.path = chainProvider.pathname
+  proxyReq.path = chainProvider.pathname + chainProvider.search
 })
 proxy.on('error', (e) => {
   console.error(e)
